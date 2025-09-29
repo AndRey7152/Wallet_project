@@ -4,7 +4,7 @@ from .models import User, Category, Transactions
 # Register your models here.
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['user_name', 'email', 'telegram_id']
+    list_display = ['user_name', 'money', 'email', 'telegram_id']
     list_filter = ['user_name', 'create']
     search_fields = ['user_name', 'telegram_id']
     ordering = ['create']

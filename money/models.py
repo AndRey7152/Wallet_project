@@ -7,12 +7,14 @@ from django.db import models
 class User(models.Model):
     '''Модель пользователей'''
     user_name = models.CharField(max_length=50)
+    money = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     email = models.EmailField(blank=True)
     telegram_id = models.CharField(max_length=10, blank=True)
     create = models.DateTimeField(auto_now_add=True)
     
+    
     class Meta:
-        ordering = ['user_name', 'email', 'telegram_id']
+        ordering = ['user_name', 'money', 'email', 'telegram_id']
         
     def __str__(self):
         return self.user_name
