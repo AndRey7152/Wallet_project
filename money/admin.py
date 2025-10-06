@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Category, Transactions
+from .models import User, Category, Transactions, Wallet
 
 # Register your models here.
 @admin.register(User)
@@ -22,3 +22,10 @@ class TransactionsAdmin(admin.ModelAdmin):
     raw_id_fields = ['user', 'category']
     date_hierarchy = 'date'
     ordering = ['date']
+    
+@admin.register(Wallet)
+class WalletAdmin(admin.ModelAdmin):
+    list_display = ['name', 'amount', 'user_id']
+    list_filter = ['user_id']
+    search_fields = ['user_id']
+    ordering = ['user_id']
