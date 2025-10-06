@@ -43,8 +43,10 @@ class Transactions(models.Model):
     user = models.ForeignKey(User,
                                 on_delete=models.CASCADE,)
     category = models.ForeignKey(Category, 
-                                 on_delete=models.CASCADE,
-                                 )
+                                 on_delete=models.CASCADE,)
+    wallet_transact = models.ForeignKey(Wallet, 
+                                        on_delete=models.CASCADE, 
+                                        null=True)
     type = models.CharField(max_length=7, choices=Status.choices, default=Status.EXPENSE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(auto_now_add=True)

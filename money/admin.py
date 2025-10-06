@@ -16,10 +16,10 @@ class CategoryAdmin(admin.ModelAdmin):
     
 @admin.register(Transactions)
 class TransactionsAdmin(admin.ModelAdmin):
-    list_display = ['user', 'category', 'type', 'amount', 'description', 'date']
-    list_filter = ['category', 'type', 'amount', 'date']
+    list_display = ['user', 'category', 'wallet_transact', 'type', 'amount', 'description', 'date']
+    list_filter = ['category', 'wallet_transact', 'type', 'amount', 'date']
     search_fields = ['category']
-    raw_id_fields = ['user', 'category']
+    raw_id_fields = ['user', 'category', 'wallet_transact']
     date_hierarchy = 'date'
     ordering = ['date']
     
