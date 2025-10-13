@@ -6,6 +6,8 @@ class User(models.Model):
     '''Модель пользователей'''
     user_name = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
+    password1 = models.CharField(max_length=50)
+    password2 = models.CharField(max_length=50)
     telegram_id = models.CharField(max_length=50, blank=True, null=True)
     create = models.DateTimeField(auto_now_add=True)
     

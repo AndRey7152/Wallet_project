@@ -21,5 +21,5 @@ from django.contrib.sitemaps.views import sitemap
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('wallet/', include('wallet.urls')),
+    path('', include('wallet.urls')),
 ]

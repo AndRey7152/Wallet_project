@@ -1,0 +1,19 @@
+{% extends 'wallet/base.html' %}
+{% block content %}
+<h2>Регистрация</h2>
+{% if form.errors %}
+    {% for key, value in form.errors.items %}
+        <strong>{{ value }}</strong>
+    {% endfor %}
+    <button type="button">
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    Имя пользователя: {{form.user_name}}<br>
+    Email: {{form.email}}<br>
+    Пароль:{{form.password1}}<br>
+    {{ from.errors.password }}
+    Повтор пароля: {{form.password2}}<br>
+    <button type="submit">Регистрация</button>
+</form>
+{% endblock %}

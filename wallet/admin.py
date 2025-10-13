@@ -4,7 +4,7 @@ from .models import User, Category, Transactions, Wallet
 # Register your models here.
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['user_name', 'email', 'telegram_id']
+    list_display = ['user_name', 'email', 'password1', 'telegram_id']
     list_filter = ['user_name', 'create']
     search_fields = ['user_name']
     ordering = ['create']
@@ -18,7 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class TransactionsAdmin(admin.ModelAdmin):
     list_display = ['user', 'category',  'type', 'amount', 'description', 'date']
     list_filter = ['category', 'wallet_transact', 'type', 'amount', 'date']
-    search_fields = ['category']
+    search_fields = ['category', 'user_id']
     raw_id_fields = ['user', 'category', 'wallet_transact']
     date_hierarchy = 'date'
     ordering = ['-date']
