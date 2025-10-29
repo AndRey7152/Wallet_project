@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+<body>
+    <h2>Сайт для отслеживаания личных средств</h2>
+    {% if user.is_authenticated %}
+        {% if user.username %}
+            <p>Добро пожаловать, {{ user.username }}!</p>
+            <a href="{% url 'account:logout' %}">Выйти из аккунта</a>
+        {% else %}
+            <p>Добро пожаловать, {{ user.email }}!</p>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'account:login' %}">Войти в аккаунт</a><br>
+        <a href="{% url 'account:signup' %}">Регистрация</a>
+    {% endif %}
+
+
+    {% block content %}
+    {% endblock content %}
+</body>
+<p>Все права мои и только мои</p>
+</html>

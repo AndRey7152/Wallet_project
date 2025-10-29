@@ -1,22 +1,21 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
-from .models import User
-
-class CreateUserForms(forms.ModelForm):
+class CreateUserForms(UserCreationForm):
+    email = forms.EmailField()
+    password1 = forms.CharField(max_length=50, widget=forms.PasswordInput)
+    password2 = forms.CharField(max_length=50, widget=forms.PasswordInput)
+    
     class Meta:
         model = User
-        fields = ['user_name', 'email', 'password1', 'password2']
-        
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email__iexact = email).exists():
-            raise forms.ValidationError('Пользователь с таким email уже существует.')
-        return email
+        fields = ['email', 'password1', 'password2']
     
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-        return user
-    
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(max_length=50, required=True, widget=forms.PasswordInput)
+    remember_me = forms.BooleanField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['email', 'password', 'remember_me']

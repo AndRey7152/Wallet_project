@@ -1,0 +1,15 @@
+{% extends 'wallet/base.html' %}
+
+{% block content %}
+    <h3> Вход в учетную запись</h3>
+    {% if form.errors %}
+    <div> Неверный email или пароль</div><br>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        Email: {{form.email}}<br>
+        Пароль: {{form.password}}<br>
+        Запомнить меня: {{form.remember_me}}<br>
+        <button type="submit">Войти</button>
+    </form>
+{% endblock %}

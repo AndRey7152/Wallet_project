@@ -1,7 +1,7 @@
 venv
 .vscode
 /db.sqlite3
-/wallet.__pycache__
-/wallet.migrations
-/wallet_account.__pycache__
-/wallet_account.migrations
+/wallet/__pycache__
+/wallet/migrations
+/wallet_account/__pycache__
+/wallet_account/migrations

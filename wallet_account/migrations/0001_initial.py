@@ -17,8 +17,6 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('user_name', models.CharField(max_length=50)),
                 ('email', models.EmailField(blank=True, max_length=254, null=True)),
-                ('password1', models.CharField(max_length=50)),
-                ('password2', models.CharField(max_length=50)),
                 ('telegram_id', models.CharField(blank=True, max_length=50, null=True)),
                 ('create', models.DateTimeField(auto_now_add=True)),
             ],

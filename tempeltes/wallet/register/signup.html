@@ -12,8 +12,8 @@
     Имя пользователя: {{form.user_name}}<br>
     Email: {{form.email}}<br>
     Пароль:{{form.password1}}<br>
-    {{ from.errors.password }}
-    Повтор пароля: {{form.password2}}<br>
+    {{ form.errors.password}}
+    Повторите пароль: {{form.password2}}<br>
     <button type="submit">Регистрация</button>
 </form>
 {% endblock %}
