@@ -8,13 +8,23 @@
     {% if user.is_authenticated %}
         {% if user.username %}
             <p>Добро пожаловать, {{ user.username }}!</p>
-            <a href="{% url 'account:logout' %}">Выйти из аккунта</a>
+            <a href="{% url 'wallet_account:home' %}">Главная страница</a><br>
+            <a href="{% url 'wallet_account:update_user' %}">Обновить данные</a><br>
+            <a href="{% url 'wallet_account:logout' %}">Выйти из аккунта</a><br>
+            <a href="{% url 'wallet_account:delete_user' %}">Удалить аккаунт</a>
         {% else %}
             <p>Добро пожаловать, {{ user.email }}!</p>
         {% endif %}
     {% else %}
-        <a href="{% url 'account:login' %}">Войти в аккаунт</a><br>
-        <a href="{% url 'account:signup' %}">Регистрация</a>
+        <a href="{% url 'wallet_account:login' %}">Войти в аккаунт</a><br>
+        <a href="{% url 'wallet_account:signup' %}">Регистрация</a>
+    {% endif %}
+    {% if messages %}
+        <ul class="'messages">
+            {% for message in messages %}
+                <li class="{{message.tags}}">{{message}}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
 
