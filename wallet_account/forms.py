@@ -3,11 +3,14 @@ import uuid
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.contrib import messages
+from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 
 from .models import Profile
 from .other import generate_username_from_email
+from .email import send_confirmation_email
 
 class CreateUserForms(forms.ModelForm):
     email = forms.EmailField(label='Email')
@@ -88,32 +91,73 @@ class LoginForm(forms.Form):
         
 class UpdateUserForm(forms.ModelForm):
     
+    email = forms.EmailField(required=True)
     username = forms.CharField(required=False)
     first_name = forms.CharField(max_length=55)
     last_name = forms.CharField(max_length=55)
     
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name']
+        fields = ['email', 'username', 'first_name', 'last_name']
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.original_email = self.instance.email
+        else:
+            self.original_email = None
+            
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if username:
             if User.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
                 raise forms.ValidationError('Это "Имя пользователя" уже занято.')
         return username
+    
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        user = self.instance
+        
+        if email == user.email.strip().lower():
+            return email
+        
+        if User.objects.filter(email=email).exclude(pk=user.pk).exists():
+            raise forms.ValidationError('Этот Email уже зарегестрирован.')
+        
+        return email
         
     def save(self, commit=True):
         user = super().save(commit=False)
+        profile = user.profile
         
-        if self.cleaned_data['first_name']:
+        if 'first_name' in self.changed_data:
             user.first_name = self.cleaned_data['first_name']
-        if self.cleaned_data['last_name']:
+            
+        if 'last_name' in self.changed_data:
             user.last_name = self.cleaned_data['last_name']
             
-        if not self.cleaned_data['username']:
-            user.username = self.changed_data['username']
+        if 'username' in self.changed_data:
+            username = self.cleaned_data['username']
+            user.username = username if username else self.instance.username
+                
+        if 'email' in self.changed_data:
+            new_email = self.cleaned_data['email']
+            print(new_email, self.original_email)
+            
+            if new_email != self.original_email:
+                
+                profile.email_confirmed = False
+                profile.new_email = new_email
+                profile.generate_token()
+                
+                try:
+                    send_confirmation_email(self.request, user.profile)
+                    messages.info(self.request, 'На новый email отправлено письмо для подтверждения')
+                except:
+                    messages.error(self.request, 'Не удалось отправить письмо подтверждения')
             
         if commit:
             user.save()
+            
         return user
+    

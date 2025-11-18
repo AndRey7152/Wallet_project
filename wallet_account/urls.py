@@ -8,7 +8,7 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('updateuser/', views.update_user_view, name='update_user'),
-    path('deleteuser/', views.delete_user_view, name='delete_user'),
-    path('confirm/<str:token>/', views.confirm_email, name='confirm_email'),
+    path('update-user/', views.update_user_view, name='update_user'),
+    path('delete-user/', views.delete_user_view, name='delete_user'),
+    path('confirm-email/<str:token>/', views.confirm_email, name='confirm_email'),
 ]

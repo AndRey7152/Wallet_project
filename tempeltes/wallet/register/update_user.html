@@ -4,7 +4,11 @@
 <form method="post">
     {% csrf_token %}
     {% if user.is_authenticated %}
-        
+        <div>
+            <label for="{{ from.email.id_for_label }}">Email (Можно не менять):</label>
+            {{form.email}}
+            {{form.email.errors}}
+        </div>
         <div>
             <label for="{{ from.username.id_for_label }}">Новый логин (Можно не менять):</label>
             {{form.username}}

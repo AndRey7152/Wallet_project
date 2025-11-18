@@ -5,6 +5,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.utils import timezone
+from django.db import transaction
 
 from .models import Profile
 from .forms import CreateUserForms, LoginForm, UpdateUserForm
@@ -91,27 +93,48 @@ def logout_view(request):
     return redirect(to='/account/home')
 
 def confirm_email(request, token):
-    '''Подтверждение email'''
+    '''Подтверждение email и обновление адреса'''
     try:
         profile = get_object_or_404(Profile, confirmate_token=token)
+        
+        if not profile.token_expires or profile.token_expires < timezone.now():
+            messages.error(request, 'Ссылка устарела. Запросите новое подтверждение.')
+            profile.invalidate_token()
+            return redirect(to='/account/home')
+            
         user = profile.user
-        user.is_active = True
-        user.save()
         
-        profile.invalidate_token()
-        profile.email_confirmed = True
-        profile.save()
+        if User.objects.filter(email=profile.new_email).exclude(pk=user.pk).exists():
+            messages.error(request, 'Этот email уже зарегестрирован')
+            profile.invalidate_token()
+            return redirect(to='/account/home')
         
-        return HttpResponse('Email подтвержден!')
+        print(profile.user.email, profile.new_email)
+        
+        with transaction.atomic():
+            user.email = profile.new_email
+            user.save()
+        
+            profile.invalidate_token()
+            profile.email_confirmed = True
+        
+        messages.success(request, 'Email успешно подтвержден и обновлен')
+        return redirect(to='/account/home')
+        
     except Profile.DoesNotExist:
-        return HttpResponse('Неверная ссылка активации!')
+        messages.error(request, 'Неверная ссылка активации!')
+    except Exception as e:
+        messages.error(request, f'Произошла ошибка: {str(e)}')
+    return redirect(to='/account/home')
     
     
 def update_user_view(request):
     if request.method == 'POST':
         form = UpdateUserForm(request.POST, instance=request.user)
+        form.request = request
         if form.is_valid():
             user = form.save()
+            messages.success(request, 'Профиль успешно обновлен')
             return redirect(to='/account/home')
     else:
         form = UpdateUserForm(instance=request.user)
