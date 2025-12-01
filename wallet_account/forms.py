@@ -1,16 +1,11 @@
-import uuid
-
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
-from django.urls import reverse
 
 from .models import Profile
 from .other import generate_username_from_email
-from .email import send_confirmation_email
+from .email import create_confirmation_email, update_confirmation_email
 
 class CreateUserForms(forms.ModelForm):
     email = forms.EmailField(label='Email')
@@ -19,30 +14,12 @@ class CreateUserForms(forms.ModelForm):
     
     class Meta:
         model = User
-        fields = ['email']
+        fields = ['email', 'password1', 'password2']
         
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.is_active = False
-        user.username = generate_username_from_email(self.cleaned_data['email'])
-        user.set_password(self.cleaned_data['password1'])
-        
-        if commit:
-            user.save()
-            profile = Profile.objects.create(user=user)
-            token = profile.generate_token()
-            
-            try:
-                self.send_confirmation_email(user, token)
-            except Exception as e:
-                print(f'Ошибка отправки письма. Ошибка: {e}')
-            
-        return user
-    
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            pass
+            raise ValidationError('Этот email уже зарегестрирован')
         return email
     
     def clean(self):
@@ -55,30 +32,25 @@ class CreateUserForms(forms.ModelForm):
         
         return cleaned_data
     
-    
-    def send_confirmation_email(self, user, token):
-        from django.core.mail import send_mail, get_connection
-        link = settings.BASE_URL + reverse('wallet_account:confirm_email', kwargs={'token':token})
-        try:
-            conection = get_connection(timeout=30)
-            send_mail(
-                subject='Подтвердите email',
-                message=(
-                    f'Здравствуйте!\n\n'
-                    f'Для активации аккаунта перейдите по ссылке:\n'
-                    f'{link}\n\n'
-                    'Ссылка действительна 24 часа.\n\n'
-                    'Еслиы вы не регистрировались на нашем сайте - проигнорируйте это письмо.'
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                connection=conection,
-                fail_silently=False,
-            )
-        except Exception as e:
-            print(f'Ошибка отправки письма пользователю {user.email}: {e}')
-            raise
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_active = False
+        user.username = generate_username_from_email(self.cleaned_data['email'])
+        user.set_password(self.cleaned_data['password1'])
         
+        if commit:
+            try:
+                user.save()
+                profile = Profile.objects.create(user=user, token_type='activation',)
+                token = profile.generate_token()
+                create_confirmation_email(user, token)
+                
+            except Exception as e:
+                if user.pk:
+                    user.delete()
+                raise ValidationError(f'Ошибка при регистрации: {str(e)}')
+            
+        return user
     
 class LoginForm(forms.Form):
     email = forms.EmailField()
@@ -118,7 +90,9 @@ class UpdateUserForm(forms.ModelForm):
         email = self.cleaned_data['email'].strip().lower()
         user = self.instance
         
-        if email == user.email.strip().lower():
+        current_email = user.email.strip().lower() if user.email else ''
+        
+        if email == current_email:
             return email
         
         if User.objects.filter(email=email).exclude(pk=user.pk).exists():
@@ -142,22 +116,22 @@ class UpdateUserForm(forms.ModelForm):
                 
         if 'email' in self.changed_data:
             new_email = self.cleaned_data['email']
-            print(new_email, self.original_email)
             
             if new_email != self.original_email:
-                
                 profile.email_confirmed = False
                 profile.new_email = new_email
+                profile.token_type = 'change_email'
                 profile.generate_token()
                 
                 try:
-                    send_confirmation_email(self.request, user.profile)
+                    update_confirmation_email(self.request, user.profile)
                     messages.info(self.request, 'На новый email отправлено письмо для подтверждения')
                 except:
                     messages.error(self.request, 'Не удалось отправить письмо подтверждения')
             
         if commit:
-            user.save()
+            user.save(update_fields=['first_name', 'last_name', 'username'])
+            profile.save()
             
         return user
     

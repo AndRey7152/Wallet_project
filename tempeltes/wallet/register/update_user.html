@@ -27,6 +27,10 @@
             {{form.last_name.errors}}
         </div>
         
+        <div>
+            <a href="{% url 'wallet_account:change_password' %}">Изменить пароль</a>
+        </div>
+        
         <button type="submit">Сохранить</button>
     {% endif %}
 </form>

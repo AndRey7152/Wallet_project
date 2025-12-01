@@ -1,9 +1,9 @@
-from django.core.mail import send_mail
+from django.core.mail import send_mail, get_connection
 from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
 
-def send_confirmation_email(request, profile):
+def update_confirmation_email(request, profile):
     if not profile.new_email:
         raise ValueError('profile.new_email не задан!')
 
@@ -18,3 +18,26 @@ def send_confirmation_email(request, profile):
         recipient_list=[profile.new_email],
         fail_silently=False,
     )
+
+def create_confirmation_email(user, token):
+    try:
+        link = settings.BASE_URL + reverse('wallet_account:confirm_email', kwargs={'token': token})
+    
+        conection = get_connection(timeout=30)
+        send_mail(
+            subject='Подтвердите email',
+            message=(
+                f'Здравствуйте!\n\n'
+                f'Для активации аккаунта перейдите по ссылке:\n'
+                f'{link}\n\n'
+                'Ссылка действительна 24 часа.\n\n'
+                'Еслиы вы не регистрировались на нашем сайте - проигнорируйте это письмо.'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            connection=conection,
+            fail_silently=False,
+        )
+    except Exception as e:
+        messages.error(f'Ошибка отправки письма пользователю {user.email}: {e}')
+        raise

@@ -9,7 +9,8 @@
         {% csrf_token %}
         Email: {{form.email}}<br>
         Пароль: {{form.password}}<br>
+        <a href="{% url 'wallet_account:password_reset' %}">Сброс пароля</a><br>
         Запомнить меня: {{form.remember_me}}<br>
-        <button type="submit">Войти</button>
+        <button type="submit">Войти</button><br>
     </form>
 {% endblock %}

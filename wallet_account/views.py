@@ -2,9 +2,13 @@ import logging
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
+from django.core.validators import validate_email
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.views import PasswordChangeView
+from django.core.exceptions import ValidationError
+from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from django.http import HttpResponse
 from django.utils import timezone
 from django.db import transaction
 
@@ -103,20 +107,51 @@ def confirm_email(request, token):
             return redirect(to='/account/home')
             
         user = profile.user
-        
-        if User.objects.filter(email=profile.new_email).exclude(pk=user.pk).exists():
-            messages.error(request, 'Этот email уже зарегестрирован')
-            profile.invalidate_token()
-            return redirect(to='/account/home')
-        
-        print(profile.user.email, profile.new_email)
+        new_email = profile.new_email
         
         with transaction.atomic():
-            user.email = profile.new_email
-            user.save()
+            
+            if profile.token_type == 'activation':
+                if not user.email:
+                    messages.success('')
         
+                try:
+                    validate_email(user.email)
+                except ValidationError:
+                    messages.error(request, 'Некорректный email аккаунта')
+                    profile.invalidate_token()
+                    return redirect(to='/account/home')
+                
+                user.is_active = True
+                user.save()
+                messages.success(request, 'Аккаунт активирован!')
+        
+            elif profile.token_type == 'change_email':
+                
+                if not new_email:
+                    messages.error(request, 'Аккаунт активирован! Можно войти')
+                    profile.invalidate_token()
+                    return redirect(to='/account/home')
+                
+                try:
+                    validate_email(new_email)
+                except ValidationError:
+                    messages.error(request, 'Некорректный формат email')
+                    profile.invalidate_token()
+                    return redirect(to='/account/home')
+                
+                if User.objects.filter(email=profile.new_email).exclude(pk=user.pk).exists():
+                    messages.error(request, 'Этот email уже зарегестрирован')
+                    profile.invalidate_token()
+                    return redirect(to='/account/home')
+        
+                user.email = new_email
+                user.save()
+                #print(f'Email изменен: {old_email} > {new_email}')
+                
             profile.invalidate_token()
             profile.email_confirmed = True
+            profile.save()
         
         messages.success(request, 'Email успешно подтвержден и обновлен')
         return redirect(to='/account/home')
@@ -150,3 +185,8 @@ def delete_user_view(request):
         except User.DoesNotExist:
             pass
     return render(request, 'wallet/register/delete_user.html')
+
+class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
+    template_name = 'wallet/register/reset_password/change_password.html'
+    success_message = 'Successfuly Changed Your Password'
+    success_url = reverse_lazy('users-profile')
