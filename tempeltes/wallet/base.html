@@ -1,35 +1,38 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
+<html lang="ru">
     <head>
+        <meta charset="UTF-8">
         <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     </head>
 <body>
-    <h2>Сайт для отслеживаания личных средств</h2>
-    {% if user.is_authenticated %}
-        {% if user.username %}
-            <p>Добро пожаловать, {{ user.username }}!</p>
-            <a href="{% url 'wallet_account:home' %}">Главная страница</a><br>
-            <a href="{% url 'wallet_account:update_user' %}">Обновить данные</a><br>
-            <a href="{% url 'wallet_account:logout' %}">Выйти из аккунта</a><br>
-            <a href="{% url 'wallet_account:delete_user' %}">Удалить аккаунт</a>
-        {% else %}
-            <p>Добро пожаловать, {{ user.email }}!</p>
-        {% endif %}
-    {% else %}
-        <a href="{% url 'wallet_account:login' %}">Войти в аккаунт</a><br>
-        <a href="{% url 'wallet_account:signup' %}">Регистрация</a>
-    {% endif %}
-    {% if messages %}
-        <ul class="'messages">
-            {% for message in messages %}
-                <li class="{{message.tags}}">{{message}}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <div class="container">
+        <main class="main-container">
+            <h2 class="auth-title">Сайт для отслеживаания личных средств</h2>
+            {% block wallet_content %}
+            {% endblock wallet_content %}
+        </main>
 
+        <aside class="sidebar">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }} shown">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-    {% block content %}
-    {% endblock content %}
+            {% block content %}
+            {% endblock content %}
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <p>Все права мои и только мои</p>
+    </footer>
 </body>
-<p>Все права мои и только мои</p>
 </html>

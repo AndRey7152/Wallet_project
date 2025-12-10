@@ -1,19 +1,68 @@
 {% extends 'wallet/base.html' %}
 {% block content %}
-<h2>Регистрация</h2>
-{% if form.errors %}
-    {% for key, value in form.errors.items %}
-        <strong>{{ value }}</strong>
-    {% endfor %}
-    <button type="button">
-{% endif %}
-<form method="post">
-    {% csrf_token %}
-    Имя пользователя: {{form.user_name}}<br>
-    Email: {{form.email}}<br>
-    Пароль:{{form.password1}}<br>
-    {{ form.errors.password}}
-    Повторите пароль: {{form.password2}}<br>
-    <button type="submit">Регистрация</button>
-</form>
+    <div class="auth-form">
+    <h2 class="auth-title">Регистрация</h2>
+
+    {% if form.errors %}
+        <div class="message error">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+        <form method="post" class="auth-form__body">
+            {% csrf_token %}
+
+            <div class="form-group mb-3">
+                <label for="{{ form.user_name.id_for_label}}" class="form-label">
+                    Имя пользователя
+                </label>
+                {{ form.user_name }}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label">
+                    Email
+                </label>
+                {{ form.email }}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="{{ form.password1.id_for_label }}" class="form-label">
+                    Пароль
+                </label>
+                {{ form.password1 }}
+                {% if form.errors.password1 %}
+                    <div class="errors-message">
+                        {{ form.errors.password1 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="{{ form.password2.id_for_label }}" class="form-label">
+                    Повторите пароль
+                </label>
+                {{ form.password2 }}
+                {% if form.errors.password2 %}
+                    <div class="error-message">
+                        {{ form.errors.password2 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="auth-btn mb-3">
+                Регистрация
+            </button>
+
+            <div class="form-group mb-3">
+                <a href="{% url 'wallet_account:home' %}" class="auth-btn small">
+                    На главную страницу
+                </a>
+            </div>
+        </form>
+    </div>
 {% endblock %}

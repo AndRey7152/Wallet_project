@@ -1,16 +1,44 @@
 {% extends 'wallet/base.html' %}
 
 {% block content %}
-    <h3> Вход в учетную запись</h3>
-    {% if form.errors %}
-    <div> Неверный email или пароль</div><br>
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        Email: {{form.email}}<br>
-        Пароль: {{form.password}}<br>
-        <a href="{% url 'wallet_account:password_reset' %}">Сброс пароля</a><br>
-        Запомнить меня: {{form.remember_me}}<br>
-        <button type="submit">Войти</button><br>
-    </form>
+    <div class="auth-form">
+        <h3 class="auth-title"> Вход в учетную запись</h3>
+
+        {% if form.errors %}
+        <div class="message error"> Неверный email или пароль</div><br>
+        {% endif %}
+
+        <form method="post" class="auth-form__body">
+            {% csrf_token %}
+
+            <div class="form-group mb-3">
+                <label for={{ form.email.id_for_label }} class=form-label'>Email</label>
+                {{ form.email }}
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="{{ form.password.id_for_label}}" class="form-label">Пароль</label>
+                {{ form.password }}
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'wallet_account:password_reset' %}" class="auth-btn small">Забыли пароль?</a>
+
+                <div class="checkbox-group mb-3">
+                    {{ form.remember_me }}
+                    <label for="{{ form.remember_me.id_for_label }}" class="checkbox-label">
+                        Запомнить меня
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" class="auth-btn mb-3">Войти</button>
+
+            <div class="form-group mb-3">
+                <a href="{% url 'wallet_account:home' %}" class="auth-btn small">
+                    На главную страницу
+                </a>
+            </div>
+        </form>
+    </div>
 {% endblock %}

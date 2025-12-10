@@ -188,5 +188,6 @@ def delete_user_view(request):
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'wallet/register/reset_password/change_password.html'
-    success_message = 'Successfuly Changed Your Password'
-    success_url = reverse_lazy('users-profile')
+    success_message = 'Пароль успешно изменен.'
+    success_url = reverse_lazy('wallet_account:home')
+    

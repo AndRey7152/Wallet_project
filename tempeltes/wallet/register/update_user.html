@@ -1,37 +1,78 @@
 {% extends 'wallet/base.html' %}
 {% block content %}
-<h3> Обновление пользовательских данных </h3>
-<form method="post">
-    {% csrf_token %}
-    {% if user.is_authenticated %}
-        <div>
-            <label for="{{ from.email.id_for_label }}">Email (Можно не менять):</label>
-            {{form.email}}
-            {{form.email.errors}}
-        </div>
-        <div>
-            <label for="{{ from.username.id_for_label }}">Новый логин (Можно не менять):</label>
-            {{form.username}}
-            {{from.username.errors}}
-        </div>
+<div class="auth-form">
+    <h3 class="auth-title"> Обновление пользовательских данных </h3>
+    <form method="post" class="auth-form__body">
+        {% csrf_token %}
 
-        <div>
-            <label for="{{ from.first_name.id_for_label }}">Имя:</label>
-            {{form.first_name}}
-            {{form.first_name.errors}}
-        </div>
+        {% if user.is_authenticated %}
+            <div class="form-group mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label">
+                    Email (Можно не менять)
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error-message">
+                        {{form.email.errors}}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">
+                    Новый логин (Можно не менять)
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error-message">
+                        {{ from.username.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                    Имя
+                </label>
+                {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div class="error-message">
+                    {{ form.first_name.errors }}
+                </div>
+            {% endif %}
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                    Фамилия
+                </label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="error-message">
+                        {{ form.last_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div class="form-group mb-3">
+                <a href="{% url 'wallet_account:change_password' %}" class="auth-btn small">
+                    Изменить пароль
+                </a>
+            </div>
+        
+            <button type="submit" class="auth-btn mb-3">
+                Сохранить
+            </button>
 
-        <div>
-            <label for="{{ form.last_name.id_for_label }}">Фамилия:</label>
-            {{form.last_name}}
-            {{form.last_name.errors}}
-        </div>
-        
-        <div>
-            <a href="{% url 'wallet_account:change_password' %}">Изменить пароль</a>
-        </div>
-        
-        <button type="submit">Сохранить</button>
-    {% endif %}
-</form>
+            <div class="form-group mb-3">
+                <a href="{% url 'wallet_account:home' %}" class="auth-btn small">
+                    На главную страницу
+                </a>
+            </div>
+
+        {% else %}
+            <p>Для обновления данных необходимо войти в систему.</p>
+        {% endif %}
+    </form>
+</div>
 {% endblock %}

@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 
 from .models import Profile
-from .other import generate_username_from_email
+from .other import generate_username_from_email, password_check
 from .email import create_confirmation_email, update_confirmation_email
 
 class CreateUserForms(forms.ModelForm):
@@ -29,6 +29,13 @@ class CreateUserForms(forms.ModelForm):
         
         if password1 and password2 and password1 != password2:
             raise ValidationError('Пароли не совпадают!')
+        
+        if password1:
+            if not password_check(password1):
+                raise ValidationError(
+                    'Пароль должен содержать минимум 8 символов, '
+                    'цифру, строчную и заглавную букву.'
+                )
         
         return cleaned_data
     

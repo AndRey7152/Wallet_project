@@ -1,9 +1,22 @@
 {% extends 'wallet/base.html' %}
 {% block title %} Выход {% endblock %}
 {% block content %}
-    <div>
-        <h5>Вы вышли из аккаунта</h5>
-        <hr>
-        <a href="{url 'login'}">Войти в аккаунт</a>
+    <div class="auth-form">
+        <h3 class="auth-title">
+            Вы вышли из аккаунта
+        </h3>
+        <hr class="auth-divider">
+        
+        <div class="form-actions">
+            <a href="{% url 'login' %}" class="auth-btn">
+                Войти в аккаунт
+            </a>
+        </div>
+
+        <div class="form-group mb-3">
+                <a href="{% url 'wallet_account:home' %}" class="auth-btn small">
+                    На главную страницу
+                </a>
+            </div>
     </div>
 {% endblock content %}
