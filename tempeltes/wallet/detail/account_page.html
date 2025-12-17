@@ -1,0 +1,29 @@
+{% if user.is_authenticated %}
+<div class="user-welcome mb-3">
+        {% if user.first_name %}
+            <span class='user-name'>
+                Привет {{ user.first_name }}
+            </span>
+        {% elif user.username %}
+            <span class="user-name">
+                {{ user.username }}!
+            </span>
+        {% else %}
+            <span class="user-name">
+                Добро пожаловать {{ user.email }}!
+            </span>
+        {% endif %}
+    </div>
+
+    <nav class="account-menu">
+        <a href="{% url 'wallet_account:wallet:my-wallet' %}" class="auth-btn small">Главная страница</a><br>
+        <a href="{% url 'wallet_account:update_user' %}" class="auth-btn small">Обновить данные</a><br>
+        <a href="{% url 'wallet_account:logout' %}" class="auth-btn small">Выйти из аккунта</a><br>
+        <a href="{% url 'wallet_account:delete_user' %}" class="auth-btn small danger">Удалить аккаунт</a>
+    </nav>
+{% else %}
+<nav class="account-menu">
+    <a href="{% url 'wallet_account:login' %}" class="auth-btn-outline">Войти в аккаунт</a>
+    <a href="{% url 'wallet_account:signup' %}" class="auth-btn-outline">Регистрация</a>
+</nav>
+{% endif %}

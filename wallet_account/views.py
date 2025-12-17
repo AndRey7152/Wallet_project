@@ -12,18 +12,19 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import transaction
 
+from wallet.models import Wallet
 from .models import Profile
 from .forms import CreateUserForms, LoginForm, UpdateUserForm
 
 # Create your views here.
 def home_view(request):
-    details = Profile.objects.all()
-    return render(request, 'wallet/detail/home.html', {'details': details})
+    '''Главная страница'''
+    return render(request, 'wallet/detail/home.html')
 
 def signup_view(request):
     '''Функция регистрации пользователя'''
     if request.user.is_authenticated:
-        return redirect(to='/account/home')
+        return redirect(to='/account/my-wallet')
     
     if request.method == 'POST':
         form = CreateUserForms(request.POST)
@@ -50,12 +51,13 @@ def signup_view(request):
     else:
         form = CreateUserForms()
     
-    return render(request, 'wallet/register/signup.html', {'form': form})
+    return render(request, 'wallet/register/signup.html', {'form': form,
+                                                            'wallets': Wallet.objects.filter(user=request.user)})
         
 def login_view(request):
     '''Функция входа в аккаунт'''
     if request.user.is_authenticated:
-        return redirect(to='/account/home')
+        return redirect(to='/account/my-wallet')
     
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -82,7 +84,7 @@ def login_view(request):
             else:
                 messages.error(request, 'Неверный пароль')
                 return render(request, 'wallet/register/login.html', {'form': form})
-            return redirect(to='/account/home')
+            return redirect(to='/account/my-wallet')
     else:
         form = LoginForm()
     return render(request, 'wallet/register/login.html', {'form': form})
@@ -131,7 +133,7 @@ def confirm_email(request, token):
                 if not new_email:
                     messages.error(request, 'Аккаунт активирован! Можно войти')
                     profile.invalidate_token()
-                    return redirect(to='/account/home')
+                    return redirect(to='/account/my-wallet')
                 
                 try:
                     validate_email(new_email)
@@ -164,18 +166,21 @@ def confirm_email(request, token):
     
     
 def update_user_view(request):
+    ''' Обновление профиля '''
     if request.method == 'POST':
         form = UpdateUserForm(request.POST, instance=request.user)
         form.request = request
         if form.is_valid():
             user = form.save()
             messages.success(request, 'Профиль успешно обновлен')
-            return redirect(to='/account/home')
+            return redirect(to='/account/my-wallet')
     else:
         form = UpdateUserForm(instance=request.user)
-    return render(request, 'wallet/register/update_user.html', {'form': form})
+    return render(request, 'wallet/register/update_user.html', {'form': form, 
+                                                                'wallets': Wallet.objects.filter(user=request.user)})
 
 def delete_user_view(request):
+    ''' Удаление аккаунта '''
     if request.method == 'GET':
         try:
             user = User.objects.get(username = request.user.username)
@@ -187,7 +192,17 @@ def delete_user_view(request):
     return render(request, 'wallet/register/delete_user.html')
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
+    ''' Изменение пароля '''
     template_name = 'wallet/register/reset_password/change_password.html'
     success_message = 'Пароль успешно изменен.'
-    success_url = reverse_lazy('wallet_account:home')
+    success_url = reverse_lazy('wallet_account:my_wallet')
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+            context['wallets'] = Wallet.objects.filter(user=self.request.user)
+        else:
+            context['wallets'] = []
+            
+        return context

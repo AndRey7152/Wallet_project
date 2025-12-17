@@ -1,0 +1,69 @@
+{% extends 'wallet/base.html' %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="auth-form">
+    <h2 class="auth-title">
+        Создать кошелек
+    </h2>
+    
+    {% if form.errors %}
+        <div class="message error">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="auth-form__body">
+        {% csrf_token %}
+
+        <div class="form-group mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">
+                Название кошелька <span class="text-danger">*</span>
+            </label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="error-message">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="{{ form.balance.id_for_label}}" class="form-label">
+                Баланс <span class="text-danger">*</span>
+            </label>
+            {{ form.balance }}
+            {% if form.balance.errors %}
+                <div class="error-message">
+                    {{ form.balance.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="{{ form.currecy.id_for_label }}" class="form-label">
+                Валюта <span class="text-danger">*</span>
+            </label>
+            {{ form.currency }}
+            {% if form.currency.errors %}
+                <div class="error-message">
+                    {{ form.currency.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="auth-btn mb-3">
+            Создать кошелек
+        </button>
+
+    </form>
+</div>
+    {% endblock %}
+

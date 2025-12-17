@@ -1,4 +1,9 @@
 {% extends 'wallet/base.html' %}
+
+{% block money_content %}
+{% include 'wallet/detail/wallet_page.html' %}
+{% endblock %}
+
 {% block content %}
 <div class="auth-form">
     <h3 class="auth-title"> Обновление пользовательских данных </h3>
@@ -65,7 +70,7 @@
             </button>
 
             <div class="form-group mb-3">
-                <a href="{% url 'wallet_account:home' %}" class="auth-btn small">
+                <a href="{% url 'wallet_account:wallet:my-wallet' %}" class="auth-btn small">
                     На главную страницу
                 </a>
             </div>

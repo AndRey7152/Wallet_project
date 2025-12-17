@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="user-name mb-3">
+    {% if wallets %}
+        {% for wallet in wallets %}
+            <div class="wallet-item">
+                <div class="wallet-info">
+                    <span class="fw-bold">{{ wallet.name}}</span>
+                    <span> - {{ wallet.balance }} {{ wallet.get_currency_icon }}</span>
+                </div>
+
+                <div class="wallet-actions">
+                    <a href="{% url 'wallet_account:wallet:update_wallet' wallet.id %}" 
+                       class="btn-icon edit"
+                       aria-label="Редоктировать кошелек {{ wallet.name }}">
+                        <img src="{% static 'img/icons/edit.svg' %}" class="icon" width="16" height="16">
+                    </a>
+
+                    <a href="{% url 'wallet_account:wallet:delete_wallet' wallet.id %}" 
+                       class="btn-icon delete text-danger" 
+                       aria-label="Удалить кошелек {{ wallet.name }}">
+                        <img src="{% static 'img/icons/delete.svg' %}" class="icon" width="16" height="16">
+                    </a>            
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text center text-muted"> 
+            У вас нет кошельков 
+        </p>
+    {% endif %}
+    <a href="{% url 'wallet_account:wallet:create_wallet' %}" class="auth-btn small full-width text-center">
+        Создать кошелек
+    </a>
+</div>
