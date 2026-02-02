@@ -7,12 +7,12 @@
 {% block money_content %}
 <div class="auth-form">
     <h2 class="auth-title">
-        Редактирование кошелька
+        Создать кошелек
     </h2>
-
+    
     {% if form.errors %}
         <div class="error-message">
-            {% for field, errors in form.errors %}
+            {% for field, errors in form.errors.items %}
                 {% for error in errors %}
                     <p>{{ error }}</p>
                 {% endfor %}
@@ -59,9 +59,13 @@
             {% endif %}
         </div>
 
-        <button type="submit" class="auth-btn mb-3">
-            Сохранить изменения 
-        </button> 
+        <div class="buttnos-container">
+            <button type="submit" class="auth-btn mb-3">
+                Создать кошелек
+            </button>
+        </div>
+
     </form>
 </div>
 {% endblock %}
+

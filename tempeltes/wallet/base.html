@@ -6,11 +6,11 @@
         <meta charset="UTF-8">
         <title>{% block title %}{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <link rel="icon" type="image/x-ico" href="{% static 'favicon.ico' %}">
     </head>
 <body>
     <div class="container">
         <main class="main-container">
-            <h2 class="auth-title">Сайт для отслеживаания личных средств</h2>
             {% block money_content %}
             {% endblock money_content %}
         </main>

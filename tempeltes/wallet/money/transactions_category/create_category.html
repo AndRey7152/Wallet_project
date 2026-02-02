@@ -1,0 +1,46 @@
+{% extends 'wallet/base.html' %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="auth-form">
+    <h2 class="auth-title">
+        Создать категортию
+    </h2>
+
+    {% if form.errors %}
+        <div class="error-message">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="auth-form__body">
+        {% csrf_token %}
+
+        <div class="form-group mb-3">
+            <label for="{{ form.name.id_for_label}}" class="form-label">
+                Название категории<span class="text-danger">*</span>
+            </label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="error-message">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="buttons-container">
+            <button type="submit" class="auth-btn small mb-3">
+                Создать категорию
+            </button>
+            <a href="{% url 'wallet_account:wallet:all_category' %}" class="auth-btn small mb-3">Вернуться назад</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

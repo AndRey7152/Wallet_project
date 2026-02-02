@@ -1,0 +1,43 @@
+{% extends 'wallet/base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="auth-form">
+    <h2 class="auth-title">Категории</h2>
+
+    {% if categories %}
+        {% for category in categories %}
+            <div class="wallet-item mb-3">
+                <div class="wallet-info">
+                    <span class="fw-bold">{{ category }}</span>
+                </div>
+
+                <div class="wallet-actions">
+                    <a href="{% url 'wallet_account:wallet:update_category' category.id %}" 
+                       class="btn-icon edit"
+                       aria-label="Редактировать категорию">
+                        <img src="{% static 'img/icons/edit.svg' %}" class="icon" width="16" height="16">
+                    </a>
+                    <a href="{% url 'wallet_account:wallet:delete_category' category.id %}"
+                       class="btn-icon delete text-danger"
+                       aria-label="Удалить категорию">
+                        <img src="{% static 'img/icons/delete.svg' %}" class="icon" width="16" height="16">
+                    </a>
+                </div>
+            </div>
+
+            {% endfor %}
+        <a href="{% url 'wallet_account:wallet:create_category' %}" class="auth-btn small mb-3">Создать категорию</a>
+    {% else %}
+        <p class="text-muted">Категории не найдены</p>
+        <dev class="buttons-contaner">
+            <a href="{% url 'wallet_account:wallet:create_category' %}" class="auth-btn small mb-3">Создать категорию</a>
+        </dev>
+    {% endif %}
+    <a href="{% url 'wallet_account:wallet:my-wallet' %}" class="auth-btn small mb-3">Назад</a>
+</div>
+{% endblock %}

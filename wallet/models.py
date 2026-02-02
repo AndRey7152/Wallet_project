@@ -1,5 +1,6 @@
+import datetime
+
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -26,18 +27,38 @@ class Wallet(models.Model):
         }
         return icons.get(self.currency, '₽')
     
+    def __str__(self):
+        return self.name
+    
+class TransactionCategory(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Название категории')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    create_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    class Meta:
+        unique_together = ('user', 'name')
+        
+
 class Transaction(models.Model):
     TYPE_CHOICES = [
         ('income', 'Доход'),
         ('expense', 'Расход')
     ]
-    CATEGORY_CHOICES = []
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    amout = models.DecimalField(max_digits=12, decimal_places=2)
-    type = models.CharField(max_length=7, choices=TYPE_CHOICES)
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    type = models.CharField(max_length=7, choices=TYPE_CHOICES, default='Доход')
+    category = models.ForeignKey(TransactionCategory, on_delete=models.SET_NULL, null=True)
     description = models.TextField(blank=True)
-    date = models.DateField()
+    date = models.DateField(default=datetime.datetime.now, editable=True)
     is_regular = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
+    
+    def get_type_translate(self):
+        type = {
+            'income': 'Доход',
+            'expense': 'Расход'
+        }
+        return type.get(self.type, 'Расход')

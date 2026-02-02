@@ -7,12 +7,12 @@
 {% block money_content %}
 <div class="auth-form">
     <h2 class="auth-title">
-        Создать кошелек
+        Редактирование кошелька
     </h2>
-    
+
     {% if form.errors %}
-        <div class="message error">
-            {% for field, errors in form.errors.items %}
+        <div class="error-message">
+            {% for field, errors in form.errors %}
                 {% for error in errors %}
                     <p>{{ error }}</p>
                 {% endfor %}
@@ -59,11 +59,12 @@
             {% endif %}
         </div>
 
-        <button type="submit" class="auth-btn mb-3">
-            Создать кошелек
-        </button>
-
+        <div class="buttons-container" >
+            <a href="{% url 'wallet_account:wallet:delete_wallet' wallet.id %}" class="auth-btn small danger mb-4">Удалить кошелек</a>
+            <button type="submit" class="auth-btn mb-3">
+                Сохранить изменения 
+            </button> 
+        </div>
     </form>
 </div>
-    {% endblock %}
-
+{% endblock %}

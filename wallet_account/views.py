@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import transaction
 
-from wallet.models import Wallet
+from wallet.models import Wallet, Transaction
 from .models import Profile
 from .forms import CreateUserForms, LoginForm, UpdateUserForm
 
@@ -51,8 +51,8 @@ def signup_view(request):
     else:
         form = CreateUserForms()
     
-    return render(request, 'wallet/register/signup.html', {'form': form,
-                                                            'wallets': Wallet.objects.filter(user=request.user)})
+    return render(request, 'wallet/register/signup.html', {'form': form})
+                                                           
         
 def login_view(request):
     '''Функция входа в аккаунт'''
@@ -177,7 +177,8 @@ def update_user_view(request):
     else:
         form = UpdateUserForm(instance=request.user)
     return render(request, 'wallet/register/update_user.html', {'form': form, 
-                                                                'wallets': Wallet.objects.filter(user=request.user)})
+                                                                'wallets': Wallet.objects.filter(user=request.user).order_by('name'),
+                                                                'transactions': Transaction.objects.filter(user=request.user).order_by('-date')})
 
 def delete_user_view(request):
     ''' Удаление аккаунта '''
@@ -201,7 +202,8 @@ class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
         context = super().get_context_data(**kwargs)
 
         if self.request.user.is_authenticated:
-            context['wallets'] = Wallet.objects.filter(user=self.request.user)
+            context['wallets'] = Wallet.objects.filter(user=self.request.user).order_by('name')
+            context['transactions'] = Transaction.objects.filter(user=self.request.user).order_by('-date')
         else:
             context['wallets'] = []
             

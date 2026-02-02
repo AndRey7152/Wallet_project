@@ -1,33 +1,93 @@
 from django import forms
 
-from .models import Wallet, Transaction
+from .models import Wallet, Transaction, TransactionCategory
 
-class SignupWalletUserForm(forms.ModelForm):
-    name = forms.CharField(
-        max_length=100, 
-        label='Название кошелька',
-        error_messages={'required': 'Укажите название кошелька'}
-        )
-    balance = forms.DecimalField(
-        max_digits=12, 
-        decimal_places=2, 
-        label='Баланс',
-        error_messages={'invalid': 'Введите корректное число'}
-        )
-    currency = forms.ChoiceField(
-        choices=[('RUB', 'Рубль'), ('USD', 'Доллар США'), ('CNY', 'Юань')],
-        label='Валюта'
-    )
+class CreateWalletUserForm(forms.ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
         
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if Wallet.objects.filter(user=self.user, name=name).exists():
+            raise forms.ValidationError('У вас уже есть кошелек с таким названием!')
+        return name
+        
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.user = self.user
+        if commit:
+            user.save()
+        return user
+    
     class Meta:
         model = Wallet
         fields = ['name', 'balance', 'currency']
         
 class UpdateWalletUserForm(forms.ModelForm):
-    name = forms.CharField(max_length=100)
-    balance = forms.DecimalField(max_digits=12, decimal_places=2)
-    currency = forms.ChoiceField(choices=[('RUB', 'Рубль'), ('USD', 'Доллар США'), ('CNY', 'Юань')])
-    
     class Meta:
         model = Wallet
         fields = ['name', 'balance', 'currency']
+        labels = {
+            'name': 'Название кошелька',
+            'balance': 'Баланс',
+            'currency': 'Валюта'
+        }
+        
+class CreateTransactionCategoryForm(forms.ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if TransactionCategory.objects.filter(user=self.user, name=name).exists():
+            raise forms.ValidationError('У вас уже есть такая категория!')
+        return name
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.user = self.user
+        if commit:
+            user.save()
+        return user
+    
+    class Meta:
+        model = TransactionCategory
+        fields = ['name']
+    
+class UpdateTransactionCategoryForm(forms.ModelForm):
+    class Meta:
+        model = TransactionCategory
+        fields = ['name']
+        labels = {
+            'name': 'Название категории'
+        }
+        
+class CreateTransactionForm(forms.ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.user = self.user
+        if commit:
+            user.save()
+        return user
+    
+    class Meta:
+        model = Transaction
+        fields = ['type', 'wallet', 'amount', 'category', 'date', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'class': 'description-input',
+                'placeholder': 'Введите описание транзакции...',
+                'rows': 4,
+            })
+        }
+        
+class UpdateTransactionForm(forms.ModelForm):
+    class Meta:
+        model = Transaction
+        fields = ['type', 'wallet', 'amount', 'category', 'date', 'description']

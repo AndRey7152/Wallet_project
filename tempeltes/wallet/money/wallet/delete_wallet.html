@@ -1,0 +1,25 @@
+{% extends 'wallet/base.html' %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="auth-form">
+    <h2 class="auth-title">Удаление кошелька</h2>
+    
+    <form method="post" class="auth-form__body">
+        {% csrf_token %}
+
+        <p class="text-muted mb-4">
+            Кошеле {{ wallet.name }} будет удален.
+        </p>
+
+        <div class="buttons-container">
+            <button type="submit" class="auth-btn danger mb-3">
+                Удалить кошелек
+            </button>
+        </div>
+    </form>    
+</div>
+{% endblock %}

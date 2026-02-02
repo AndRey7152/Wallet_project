@@ -1,0 +1,25 @@
+{% extends 'wallet/base.html' %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="auth-form">
+    <h2 class="auth-title">Удаление Категории</h2>
+
+    <form method="post" class="auth-form__body">
+        {% csrf_token %}
+
+        <p class="text-muted mb-4">
+            Категория {{ transactions_category.name }} будет удалена.
+        </p>
+
+        <div class="buttons-container">
+            <button type="submit" class="auth-btn danger mb-3">
+                Удалить категорию
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
