@@ -1,5 +1,4 @@
-import datetime
-
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -48,11 +47,11 @@ class Transaction(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
     type = models.CharField(max_length=7, choices=TYPE_CHOICES, default='Доход')
     category = models.ForeignKey(TransactionCategory, on_delete=models.SET_NULL, null=True)
     description = models.TextField(blank=True)
-    date = models.DateField(default=datetime.datetime.now, editable=True)
+    date = models.DateTimeField(default=timezone.now, editable=True)
     is_regular = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     
@@ -62,3 +61,4 @@ class Transaction(models.Model):
             'expense': 'Расход'
         }
         return type.get(self.type, 'Расход')
+    

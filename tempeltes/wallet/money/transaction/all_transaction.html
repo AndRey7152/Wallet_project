@@ -1,0 +1,58 @@
+{% extends 'wallet/base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="user-name mb-5">
+    {% if user.is_authenticated %}
+    <div class="auth-form">
+        <h2 class="auth-title">Транзакции</h2>
+        {% if transactions %}
+            {% for transaction in transactions %}
+                <div class="wallet-item mb-3">
+                    <div class="wallet-info d-flex justify-content-between align-items-center">
+                        <span class="wallet-info_type badge type-{{ transaction.type }}">
+                            {{ transaction.get_type_translate }}
+                        </span>
+                            <a href="{% url 'wallet_account:wallet:page_transaction' transaction.id %}" 
+                               class="wallet-info_category btn-title btn-title--sm flex-grow text-center">
+                                {{transaction.category}}
+                            </a>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-end">{{transaction.amount}}</span>
+                            <div class="wallet-actions">
+                                <a href="{% url 'wallet_account:wallet:update_transaction' transaction.id %}" 
+                                   class="btn-icon edit"
+                                   aria-label="Редоктировать транзакцию {{ transaction.id }}">
+                                <img src="{% static 'img/icons/edit.svg' %}" class="icon" width="16" height="16">
+                                </a>
+                                <a href="{% url 'wallet_account:wallet:delete_transaction' transaction.id %}" 
+                                   class="btn-icon delete text-danger" 
+                                   aria-label="Удалить транзакию {{ transaction.id }}">
+                                <img src="{% static 'img/icons/delete.svg' %}" class="icon" width="16" height="16">
+                                </a>            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text center text-muted"> 
+                У вас нет кошельков 
+            </p>
+        {% endif %}
+    <a href="{% url 'wallet_account:wallet:create_transaction' %}" class="auth-btn small full-width text-center">
+        Создать транзакцию
+    </a>
+    
+    <a href="{% url 'wallet_account:wallet:all_category' %}" class="auth-btn small mb-3">
+        Посмотреть категории
+    </a>
+    </div>
+{% endif %}
+</div>
+{% endblock %}

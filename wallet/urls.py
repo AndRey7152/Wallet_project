@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.wallets_user_view, name='my-wallet'),
     
     path('create-wallet/', views.create_wallet_view, name='create_wallet'),
+    path('<int:wallet_id>/page_wallet_transaction/', views.page_wallet_transaction_view, name='page_wallet_transaction'),
     path('<int:wallet_id>/update/', views.update_wallet_view, name='update_wallet'),
     path('<int:wallet_id>/delete/', views.delete_wallet_view, name='delete_wallet'),
     
@@ -15,7 +16,10 @@ urlpatterns = [
     path('<int:category_id>/update-category/', views.update_category_view, name='update_category'),
     path('<int:category_id>/delete-category/', views.delete_category_view, name='delete_category'),
     
+    path('all-transaction/', views.all_transaction_view, name='all_transaction'),
+    path('<int:transaction_id>/page-transaction/', views.page_transaction_view, name='page_transaction'),
     path('create-transaction/', views.create_transaction_view, name='create_transaction'),
+    path('<int:wallet_id>/create-transaction/', views.create_transaction_view, name='create_transaction_for_wallet'),
     path('<int:transaction_id>/update-transaction/', views.update_transaction_view, name='update_transaction'),
     path('<int:transaction_id>/delete-transaction/', views.delete_transaction_view, name='delete_transaction'),
 ]

@@ -1,0 +1,52 @@
+{% extends 'wallet/base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'wallet/detail/account_page.html' %}
+{% endblock %}
+
+{% block money_content %}
+<div class="user-name-page mb-5">
+    {% if user.is_authenticated %}
+        <div class="auth-for-page">
+            <h2 class="auth-title mb-4">
+                {{ transaction.category }}
+            </h2>
+                
+
+            <div class="transaction-details">
+                <div class="badge type-{{ transaction.type }} mb-3">
+                    {{ transaction.get_type_translate }}
+                </div>
+                <div class="form-group-txt mb-3">
+                    <label class="form-label">Кошелек:</label>
+                    <span class="form-value">
+                        {{ transaction.wallet }}
+                    </span>
+                </div>
+                <div class="form-group-txt mb-3">
+                    <label class="form-label">Сумма:</label>
+                    <span class="form-value">
+                        {{ transaction.amount }}
+                    </span>
+                </div>
+                <div class="form-group-txt mb-3">
+                    <label class="form-label">Дата:</label>
+                    <span class="form-value">
+                        {{ transaction.date }}
+                    </span>
+                </div>
+                <div class="form-group-txt mb-3">
+                    <label class="form-label">Описание:</label>
+                    <span class="form-value">
+                        {{ transaction.description|default:"-" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <a href="{% url 'wallet_account:wallet:all_transaction' %}" class="auth-btn small">Назад</a>
+        <a href="{% url 'wallet_account:wallet:update_transaction' transaction.id %}" class="auth-btn small">Обновить транзакцию</a>
+        <a href="{% url 'wallet_account:wallet:delete_transaction' transaction.id %}" class="auth-btn danger compact small">Удалить транзакцию</a>
+</div>
+{% endblock %}
