@@ -30,7 +30,7 @@ class Wallet(models.Model):
         return self.name
     
 class TransactionCategory(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Название категории')
+    name = models.CharField(max_length=100, verbose_name='Название категории', default='Расходы')
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     create_at = models.DateTimeField(auto_now_add=True)
     

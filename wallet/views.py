@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction as trans
+from django.urls import reverse
 
 from .models import Wallet, TransactionCategory, Transaction
 from .forms import (CreateWalletUserForm, 
@@ -45,7 +46,7 @@ def create_wallet_view(request):
 def page_wallet_transaction_view(request, **kwargs):
     wallet = kwargs['object']
     print(kwargs)
-    transactions = Transaction.objects.filter(wallet=kwargs['wallet_id'])
+    transactions = Transaction.objects.filter(wallet=kwargs['wallet_id']).order_by('-date')
     return render(request, 'wallet/money/wallet/page_wallet_transaction.html', {'wallet': wallet, 'transactions': transactions})
 
 @user_object(Wallet, obj_id='wallet_id', url='/my-wallets/')
@@ -170,13 +171,14 @@ def create_transaction_view(request, wallet_id = None):
                 if wallet:
                     transaction.wallet = wallet
             
+                form.save()
                 transaction.user = request.user
                 transaction.save()
             
                 messages.success(request, f'Транзакция создана!')
             
                 if wallet:
-                    return redirect('wallet_detail', wallet.id)
+                    return redirect(f'/account/my-wallet/{wallet.id}/page-wallet-transaction')
                 else:
                     return redirect('/account/my-wallet/all-transaction')
             except Exception as e:
