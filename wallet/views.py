@@ -45,7 +45,6 @@ def create_wallet_view(request):
 @user_object(Wallet, obj_id='wallet_id', url='/my-wallets/')
 def page_wallet_transaction_view(request, **kwargs):
     wallet = kwargs['object']
-    print(kwargs)
     transactions = Transaction.objects.filter(wallet=kwargs['wallet_id']).order_by('-date')
     return render(request, 'wallet/money/wallet/page_wallet_transaction.html', {'wallet': wallet, 'transactions': transactions})
 

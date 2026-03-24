@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from environs import Env
 
+import os
+
 env = Env()
 env.read_env()
 
@@ -21,6 +23,8 @@ env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+ENVIRONMENT = os.environ.get('DJANGO_ENV', 'development')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -28,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-t#hqa@)+ture4t+ea9*mlztflj=$t@jo2$z7j1@(f3qh22688b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENVIRONMENT == 'development'
 
 ALLOWED_HOSTS = []
 
@@ -81,11 +85,38 @@ WSGI_APPLICATION = 'wallet_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENVIRONMENT == 'production':
+    DEBUG = False
+
+    ALLOWED_HOSTS = ['mywallet.website', 'www.mywallet.website']
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_POSTGRES_NAME'),
+            'USER': env('DB_POSTGRES_USER'),
+            'PASSWORD': env('DB_POSTGRES_PASSWORD'),
+            'HOST': env('DB_POSTGRES_HOST', default='localhost'),
+            'PORT': env.int('DB_POSTGRES_PORT', default='5432'),
+        }
     }
+
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_REDIRECT_EXEMPT = []
+    SECURE_SSL_HOST = None
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR/ 'db.sqlite3',
+        }
 }
 
 
