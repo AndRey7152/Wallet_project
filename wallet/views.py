@@ -44,6 +44,7 @@ def create_wallet_view(request):
 
 @user_object(Wallet, obj_id='wallet_id', url='/my-wallets/')
 def page_wallet_transaction_view(request, **kwargs):
+    ''' Функция вывода трнзакций по кошельку'''
     wallet = kwargs['object']
     print(kwargs)
     transactions = Transaction.objects.filter(wallet=kwargs['wallet_id']).order_by('-date')
@@ -117,7 +118,6 @@ def update_category_view(request, **kwargs):
                 return redirect('/account/my-wallet/all-category')
             except Exception as e:
                 messages.error(request, f'Ошибка при обновлении категории "{category.name}"!')
-                
     else:
         form = UpdateTransactionCategoryForm(instance=category)
             

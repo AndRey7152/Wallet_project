@@ -53,15 +53,22 @@
                         <span class="badge type-{{ transaction.type }}">
                                 {{ transaction.get_type_translate }}
                         </span>
-                        <span class="text-center flex-grow-1">{{transaction.category}}</span>
+                        <a href="{% url 'wallet_account:wallet:page_transaction' transaction.id %}" 
+                           class="wallet-info_category btn-title btn-title--sm flex-grow text-center">
+                           {{transaction.category}}
+                        </a>
                         <span class="text-end">{{transaction.amount}}</span>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
             <p class="text center text-muted"> 
-                У вас нет кошельков 
+                У вас нет кошельков
+            </p>
         {% endif %}
+        <a href="{% url 'wallet_account:wallet:create_transaction' %}" class="auth-btn small full-width text-center">
+            Создать транзакцию
+        </a>
         
     </div>
 </div>

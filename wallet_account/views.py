@@ -6,6 +6,7 @@ from django.core.validators import validate_email
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
@@ -149,7 +150,6 @@ def confirm_email(request, token):
         
                 user.email = new_email
                 user.save()
-                #print(f'Email изменен: {old_email} > {new_email}')
                 
             profile.invalidate_token()
             profile.email_confirmed = True
@@ -164,16 +164,28 @@ def confirm_email(request, token):
         messages.error(request, f'Произошла ошибка: {str(e)}')
     return redirect(to='/account/home')
     
-    
+
+@login_required
 def update_user_view(request):
     ''' Обновление профиля '''
+    user_profile, create = Profile.objects.get_or_create(
+        user = request.user,
+        defaults={
+            'telegram_id': '',
+        }
+    )
+
     if request.method == 'POST':
         form = UpdateUserForm(request.POST, instance=request.user)
-        form.request = request
         if form.is_valid():
-            user = form.save()
-            messages.success(request, 'Профиль успешно обновлен')
-            return redirect(to='/account/my-wallet')
+            try:
+                user = form.save()
+                messages.success(request, 'Профиль успешно обновлен')
+                return redirect(to='/account/my-wallet')
+            except Exception as e:
+                messages.error(request, f'Ошибка при сохранении {str(e)}' )
+        else:
+            messages.error(request, 'Проверьте правильность заполнения формы')
     else:
         form = UpdateUserForm(instance=request.user)
     return render(request, 'wallet/register/update_user.html', {'form': form, 

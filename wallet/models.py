@@ -62,3 +62,6 @@ class Transaction(models.Model):
         }
         return type.get(self.type, 'Расход')
     
+    def __str__(self):
+        return f'{self.user} - {self.wallet}'
+    

@@ -30,11 +30,7 @@ def generate_username_from_email(email):
         if not User.objects.filter(username=candidate).exists():
             return candidate
         
-        
     raise ValidationError('Не удалось сгенерировать уникальный username')
-
-
-import string
 
 def password_check(password):
     '''Функция проверки пароля на требования'''
