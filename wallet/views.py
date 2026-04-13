@@ -148,7 +148,23 @@ def all_transaction_view(request):
 def page_transaction_view(request, **kwargs):
     '''Функция показывает всю информацию о транзакции'''
     transaction = kwargs['object']
-    return render(request, 'wallet/money/transaction/page_transaction.html', {'transaction': transaction})
+
+    next_url = request.GET.get('next')
+
+    if not next_url:
+        next_url = request.session.get('transaction_source')
+        if 'transaction_source' in request.session:
+            del request.session['transaction_source']
+        
+    if not next_url:
+        next_url = '/account/my-wallet/all-transaction'
+
+    context = {
+        'back_url': next_url,
+        'transaction': transaction
+    }
+    print('Рендорится шаблон просмотра страницы транзакции')
+    return render(request, 'wallet/money/transaction/page_transaction.html', context)
 
 @login_required
 def create_transaction_view(request, wallet_id = None):

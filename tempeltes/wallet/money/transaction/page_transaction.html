@@ -45,7 +45,16 @@
             </div>
         </div>
         {% endif %}
-        <a href="{% url 'wallet_account:wallet:all_transaction' %}" class="auth-btn small">Назад</a>
+        <a href="{{ back_url }}" class="auth-btn small">Назад</a>
+        <script>
+            function goBack(fallbackUrl) {
+                if (fallbackUrl && fallbackUrl !== '/') {
+                    window.location.href = fallbackUrl;
+                } else {
+                    window.history.back();
+                }
+            }
+        </script>
         <a href="{% url 'wallet_account:wallet:update_transaction' transaction.id %}" class="auth-btn small">Обновить транзакцию</a>
         <a href="{% url 'wallet_account:wallet:delete_transaction' transaction.id %}" class="auth-btn danger compact small">Удалить транзакцию</a>
 </div>

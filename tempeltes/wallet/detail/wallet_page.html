@@ -53,7 +53,7 @@
                         <span class="badge type-{{ transaction.type }}">
                                 {{ transaction.get_type_translate }}
                         </span>
-                        <a href="{% url 'wallet_account:wallet:page_transaction' transaction.id %}" 
+                        <a href="{% url 'wallet_account:wallet:page_transaction' transaction.id %}?next=/account/my-wallet/" 
                            class="wallet-info_category btn-title btn-title--sm flex-grow text-center">
                            {{transaction.category}}
                         </a>
