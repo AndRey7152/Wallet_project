@@ -46,7 +46,6 @@ def create_wallet_view(request):
 def page_wallet_transaction_view(request, **kwargs):
     ''' Функция вывода трнзакций по кошельку'''
     wallet = kwargs['object']
-    print(kwargs)
     transactions = Transaction.objects.filter(wallet=kwargs['wallet_id']).order_by('-date')
     return render(request, 'wallet/money/wallet/page_wallet_transaction.html', {'wallet': wallet, 'transactions': transactions})
 
